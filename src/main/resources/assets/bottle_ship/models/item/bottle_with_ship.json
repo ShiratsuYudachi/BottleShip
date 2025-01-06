@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "ship_in_bottle:item/bottle_without_ship"
+    "layer0": "bottle_ship:item/bottle_with_ship"
   },
   "display": {
     "firstperson_righthand": {

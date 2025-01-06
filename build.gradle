@@ -63,7 +63,7 @@ repositories {
 }
 dependencies {
     minecraft ("net.minecraftforge:forge:$minecraft_version-$forge_version")
-    compileOnly ("org.valkyrienskies:valkyrienskies-1201-forge:$vs2_version")
+    implementation("org.valkyrienskies:valkyrienskies-1201-forge:$vs2_version")
     compileOnly ("org.valkyrienskies.core:api:$vs_core_version")
     compileOnly ("org.joml:joml-primitives:1.10.0")
 }
