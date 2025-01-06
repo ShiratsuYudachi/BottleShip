@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GGG",
+    "PCG",
+    "GGG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "C": {
+      "item": "minecraft:ender_eye"
+    },
+    "P": {
+      "tag": "minecraft:logs"
+    }
+  },
+  "result": {
+    "item": "ship_in_bottle:bottle_without_ship",
+    "count": 1
+  }
+}

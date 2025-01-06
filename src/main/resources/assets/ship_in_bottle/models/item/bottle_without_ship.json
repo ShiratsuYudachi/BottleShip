@@ -1,0 +1,30 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "ship_in_bottle:item/bottle_without_ship"
+  },
+  "display": {
+    "firstperson_righthand": {
+      "rotation": [
+        -25,
+        -55,
+        -20
+      ],
+      "translation": [
+        -2,
+        4,
+        2
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  }
+}
