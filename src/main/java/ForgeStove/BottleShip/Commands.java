@@ -1,4 +1,4 @@
-package ForgeStove;
+package ForgeStove.BottleShip;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;

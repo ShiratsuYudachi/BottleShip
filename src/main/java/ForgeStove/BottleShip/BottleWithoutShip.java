@@ -1,4 +1,4 @@
-package ForgeStove;
+package ForgeStove.BottleShip;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -13,7 +13,7 @@ import org.valkyrienskies.core.api.ships.*;
 
 import java.util.Objects;
 
-import static ForgeStove.BottleShip.SHIPS;
+import static ForgeStove.BottleShip.BottleShip.SHIPS;
 import static org.valkyrienskies.mod.common.VSGameUtilsKt.getShipManagingPos;
 public class BottleWithoutShip extends Item {
 	public BottleWithoutShip(Properties properties) {

@@ -1,4 +1,4 @@
-package ForgeStove;
+package ForgeStove.BottleShip;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;

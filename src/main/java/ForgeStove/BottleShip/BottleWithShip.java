@@ -1,4 +1,4 @@
-package ForgeStove;
+package ForgeStove.BottleShip;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -14,7 +14,8 @@ import org.valkyrienskies.core.api.ships.*;
 
 import java.util.List;
 
-import static ForgeStove.BottleShip.SHIPS;
+import static ForgeStove.BottleShip.BottleShip.SHIPS;
+import static net.minecraft.network.chat.Component.*;
 public class BottleWithShip extends Item {
 	public BottleWithShip(Properties properties) {
 		super(properties);
@@ -28,9 +29,9 @@ public class BottleWithShip extends Item {
 	) {
 		CompoundTag nbt = itemStack.getTag();
 		if (nbt == null) return;
-		tooltip.add(Component.nullToEmpty(nbt.getString("ID")));
-		tooltip.add(Component.nullToEmpty(nbt.getString("Name")));
-		tooltip.add(Component.nullToEmpty(nbt.getString("Size")));
+		tooltip.add(translatable("bottle_ship.tooltip.id", nullToEmpty(nbt.getString("ID"))));
+		tooltip.add(translatable("bottle_ship.tooltip.name", nullToEmpty(nbt.getString("Name"))));
+		tooltip.add(translatable("bottle_ship.tooltip.size", nullToEmpty(nbt.getString("Size"))));
 	}
 	@Override
 	public @NotNull InteractionResultHolder<ItemStack> use(

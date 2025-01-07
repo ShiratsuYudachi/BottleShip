@@ -1,4 +1,4 @@
-package ForgeStove;
+package ForgeStove.BottleShip;
 import net.minecraft.world.level.Level;
 import org.valkyrienskies.core.api.ships.Ship;
 public class ShipData {
