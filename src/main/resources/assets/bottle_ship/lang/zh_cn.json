@@ -1,5 +1,8 @@
 {
+  "tab.bottle_ship": "瓶中船",
   "item.bottle_ship.bottle_without_ship": "空瓶",
   "item.bottle_ship.bottle_with_ship": "瓶中船",
-  "tab.bottle_ship": "瓶中船"
+  "tooltip.bottle_ship.id": "ID: ",
+  "tooltip.bottle_ship.name": "船名: ",
+  "tooltip.bottle_ship.size": "尺寸: "
 }

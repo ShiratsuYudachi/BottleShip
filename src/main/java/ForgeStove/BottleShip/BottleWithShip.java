@@ -29,9 +29,9 @@ public class BottleWithShip extends Item {
 	) {
 		CompoundTag nbt = itemStack.getTag();
 		if (nbt == null) return;
-		tooltip.add(translatable("bottle_ship.tooltip.id", nullToEmpty(nbt.getString("ID"))));
-		tooltip.add(translatable("bottle_ship.tooltip.name", nullToEmpty(nbt.getString("Name"))));
-		tooltip.add(translatable("bottle_ship.tooltip.size", nullToEmpty(nbt.getString("Size"))));
+		tooltip.add(translatable("tooltip.bottle_ship.id", nullToEmpty(nbt.getString("ID"))));
+		tooltip.add(translatable("tooltip.bottle_ship.name", nullToEmpty(nbt.getString("Name"))));
+		tooltip.add(translatable("tooltip.bottle_ship.size", nullToEmpty(nbt.getString("Size"))));
 	}
 	@Override
 	public @NotNull InteractionResultHolder<ItemStack> use(
