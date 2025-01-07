@@ -1,5 +1,4 @@
 package ForgeStove.BottleShip;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -14,8 +13,10 @@ import org.valkyrienskies.core.api.ships.*;
 
 import java.util.List;
 
-import static ForgeStove.BottleShip.BottleShip.SHIPS;
+import static ForgeStove.BottleShip.BottleShip.*;
+import static net.minecraft.ChatFormatting.GRAY;
 import static net.minecraft.network.chat.Component.*;
+import static net.minecraft.world.InteractionResultHolder.*;
 public class BottleWithShip extends Item {
 	public BottleWithShip(Properties properties) {
 		super(properties);
@@ -29,9 +30,9 @@ public class BottleWithShip extends Item {
 	) {
 		CompoundTag nbt = itemStack.getTag();
 		if (nbt == null) return;
-		tooltip.add(translatable("tooltip.bottle_ship.id", nullToEmpty(nbt.getString("ID"))));
-		tooltip.add(translatable("tooltip.bottle_ship.name", nullToEmpty(nbt.getString("Name"))));
-		tooltip.add(translatable("tooltip.bottle_ship.size", nullToEmpty(nbt.getString("Size"))));
+		tooltip.add(translatable("tooltip." + MODID + ".id", nullToEmpty(nbt.getString("ID"))).withStyle(GRAY));
+		tooltip.add(translatable("tooltip." + MODID + ".name", nullToEmpty(nbt.getString("Name"))).withStyle(GRAY));
+		tooltip.add(translatable("tooltip." + MODID + ".size", nullToEmpty(nbt.getString("Size"))).withStyle(GRAY));
 	}
 	@Override
 	public @NotNull InteractionResultHolder<ItemStack> use(
@@ -40,12 +41,10 @@ public class BottleWithShip extends Item {
 			@NotNull InteractionHand hand
 	) {
 		ItemStack itemStack = player.getItemInHand(hand);
-		if (level.isClientSide()) return InteractionResultHolder.pass(itemStack);
-		if (itemStack.getTag() == null)
-			return InteractionResultHolder.fail(new ItemStack(BottleShip.BOTTLE_WITHOUT_SHIP.get()));
+		if (level.isClientSide()) return pass(itemStack);
+		if (itemStack.getTag() == null) return fail(new ItemStack(BottleShip.BOTTLE_WITHOUT_SHIP.get()));
 		long id = Long.parseLong(itemStack.getTag().getString("ID"));
-		if (!SHIPS.containsKey(id))
-			return InteractionResultHolder.fail(new ItemStack(BottleShip.BOTTLE_WITHOUT_SHIP.get()));
+		if (!SHIPS.containsKey(id)) return fail(new ItemStack(BottleShip.BOTTLE_WITHOUT_SHIP.get()));
 		Ship ship = SHIPS.get(id).ship();
 		AABBdc shipAABB = ship.getWorldAABB();
 		double height = shipAABB.maxY() - shipAABB.minY();
@@ -63,27 +62,10 @@ public class BottleWithShip extends Item {
 		targetX += (dx * (depth / 2));
 		targetY += (dy * (height / 2));
 		targetZ += (dz * (depth / 2));
-		while (true) {
-			boolean hasBlock = false;
-			for (BlockPos pos : BlockPos.betweenClosed(
-					new BlockPos(
-							(int) (targetX - (depth / 2)),
-							(int) targetY,
-							(int) (targetZ - (depth / 2))
-					),
-					new BlockPos((int) (targetX + (depth / 2)), (int) targetY, (int) (targetZ + (depth / 2)))
-			))
-				if (!level.getBlockState(pos).isAir()) {
-					hasBlock = true;
-					break;
-				}
-			if (!hasBlock) break;
-			targetY = Math.ceil(targetY) + 2;
-		}
 		MinecraftServer server = level.getServer();
-		Commands.vsTeleport(ship, server, targetX, targetY + 1, targetZ);
+		Commands.vsTeleport(ship, server, targetX, targetY + height, targetZ);
 		if (((ServerShip) ship).isStatic()) Commands.vsSetStatic(ship, server, false);
 		SHIPS.remove(id);
-		return InteractionResultHolder.success(new ItemStack(BottleShip.BOTTLE_WITHOUT_SHIP.get()));
+		return success(new ItemStack(BottleShip.BOTTLE_WITHOUT_SHIP.get()));
 	}
 }
