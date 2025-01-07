@@ -46,7 +46,7 @@ public class BottleWithShip extends Item {
 		long id = Long.parseLong(itemStack.getTag().getString("ID"));
 		if (!SHIPS.containsKey(id))
 			return InteractionResultHolder.fail(new ItemStack(BottleShip.BOTTLE_WITHOUT_SHIP.get()));
-		Ship ship = SHIPS.get(id).ship;
+		Ship ship = SHIPS.get(id).ship();
 		AABBdc shipAABB = ship.getWorldAABB();
 		double height = shipAABB.maxY() - shipAABB.minY();
 		double depth = shipAABB.maxZ() - shipAABB.minZ();
@@ -78,7 +78,7 @@ public class BottleWithShip extends Item {
 					break;
 				}
 			if (!hasBlock) break;
-			targetY = Math.ceil(targetY);
+			targetY = Math.ceil(targetY) + 2;
 		}
 		MinecraftServer server = level.getServer();
 		Commands.vsTeleport(ship, server, targetX, targetY + 1, targetZ);

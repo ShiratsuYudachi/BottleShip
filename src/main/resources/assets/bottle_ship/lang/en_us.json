@@ -2,7 +2,7 @@
   "tab.bottle_ship": "Bottle Ship",
   "item.bottle_ship.bottle_without_ship": "Bottle without Ship",
   "item.bottle_ship.bottle_with_ship": "Bottle with Ship",
-  "tooltip.bottle_ship.id": "ID: ",
-  "tooltip.bottle_ship.name": "Name: ",
-  "tooltip.bottle_ship.size": "Size: "
+  "tooltip.bottle_ship.id": "ID: %s",
+  "tooltip.bottle_ship.name": "Name: %s",
+  "tooltip.bottle_ship.size": "Size: %s"
 }
