@@ -1,5 +1,5 @@
 {
-  "item.ship_in_bottle.bottle_without_ship": "空瓶",
-  "item.ship_in_bottle.bottle_with_ship": "瓶中船",
-  "tab.ship_in_bottle": "瓶中船"
+  "item.bottle_ship.bottle_without_ship": "空瓶",
+  "item.bottle_ship.bottle_with_ship": "瓶中船",
+  "tab.bottle_ship": "瓶中船"
 }

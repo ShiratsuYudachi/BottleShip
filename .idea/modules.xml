@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/BottleShip.main.iml" filepath="$PROJECT_DIR$/.idea/modules/BottleShip.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/BottleShip.test.iml" filepath="$PROJECT_DIR$/.idea/modules/BottleShip.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ForgeStove.BottleShip.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ForgeStove.BottleShip.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ForgeStove.BottleShip.test.iml" filepath="$PROJECT_DIR$/.idea/modules/ForgeStove.BottleShip.test.iml" />
     </modules>
   </component>
 </project>
