@@ -8,13 +8,15 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3dc;
 import org.joml.primitives.AABBdc;
 import org.valkyrienskies.core.api.ships.*;
 
-import java.util.List;
+import java.util.*;
 
 import static ForgeStove.BottleShip.BottleShip.*;
-import static net.minecraft.ChatFormatting.GRAY;
+import static java.lang.Math.*;
+import static net.minecraft.ChatFormatting.AQUA;
 import static net.minecraft.network.chat.Component.*;
 import static net.minecraft.world.InteractionResultHolder.*;
 public class BottleWithShip extends Item {
@@ -30,9 +32,9 @@ public class BottleWithShip extends Item {
 	) {
 		CompoundTag nbt = itemStack.getTag();
 		if (nbt == null) return;
-		tooltip.add(translatable("tooltip." + MODID + ".id", nullToEmpty(nbt.getString("ID"))).withStyle(GRAY));
-		tooltip.add(translatable("tooltip." + MODID + ".name", nullToEmpty(nbt.getString("Name"))).withStyle(GRAY));
-		tooltip.add(translatable("tooltip." + MODID + ".size", nullToEmpty(nbt.getString("Size"))).withStyle(GRAY));
+		tooltip.add(translatable("tooltip." + MODID + ".id", nullToEmpty(nbt.getString("ID"))).withStyle(AQUA));
+		tooltip.add(translatable("tooltip." + MODID + ".name", nullToEmpty(nbt.getString("Name"))).withStyle(AQUA));
+		tooltip.add(translatable("tooltip." + MODID + ".size", nullToEmpty(nbt.getString("Size"))).withStyle(AQUA));
 	}
 	@Override
 	public @NotNull InteractionResultHolder<ItemStack> use(
@@ -40,32 +42,40 @@ public class BottleWithShip extends Item {
 			@NotNull Player player,
 			@NotNull InteractionHand hand
 	) {
-		ItemStack itemStack = player.getItemInHand(hand);
-		if (level.isClientSide()) return pass(itemStack);
-		if (itemStack.getTag() == null) return fail(new ItemStack(BottleShip.BOTTLE_WITHOUT_SHIP.get()));
-		long id = Long.parseLong(itemStack.getTag().getString("ID"));
-		if (!SHIPS.containsKey(id)) return fail(new ItemStack(BottleShip.BOTTLE_WITHOUT_SHIP.get()));
-		Ship ship = SHIPS.get(id).ship();
-		AABBdc shipAABB = ship.getWorldAABB();
-		double height = shipAABB.maxY() - shipAABB.minY();
-		double depth = shipAABB.maxZ() - shipAABB.minZ();
+		ItemStack currentStack = player.getItemInHand(hand);
+		if (level.isClientSide()) return pass(currentStack);
+		ItemStack newStack = new ItemStack(BOTTLE_WITHOUT_SHIP.get());
+		if (currentStack.getTag() == null) return fail(newStack);
+		long id = Long.parseLong(currentStack.getTag().getString("ID"));
+		if (!SHIPS.containsKey(id)) return fail(newStack);
 		Vec3 playerPosition = player.position();
-		double distance = 5;
-		float yaw = player.getYRot();
-		float pitch = player.getXRot();
-		double dx = -Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch));
-		double dy = -Math.sin(Math.toRadians(pitch));
-		double dz = Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch));
-		double targetX = playerPosition.x + dx * distance;
-		double targetY = playerPosition.y + dy * distance;
-		double targetZ = playerPosition.z + dz * distance;
+		Ship ship = SHIPS.get(id).ship();
+		AABBdc worldAABB = ship.getWorldAABB();
+		double height = worldAABB.maxY() - worldAABB.minY();
+		double depth = worldAABB.maxZ() - worldAABB.minZ();
+		double yawRadians = toRadians(player.getYRot());
+		double pitchRadians = toRadians(player.getXRot());
+		double dx = -sin(yawRadians) * cos(pitchRadians);
+		double dy = -sin(pitchRadians);
+		double dz = cos(yawRadians) * cos(pitchRadians);
+		double targetX = playerPosition.x + dx * 3;
+		double targetY = playerPosition.y + dy * 3;
+		double targetZ = playerPosition.z + dz * 3;
 		targetX += (dx * (depth / 2));
 		targetY += (dy * (height / 2));
 		targetZ += (dz * (depth / 2));
+		if (SHIPS.get(id).level() != level) return fail(currentStack);
+		Vector3dc massCenter = ((ServerShip) ship).getInertiaData().getCenterOfMassInShip();
 		MinecraftServer server = level.getServer();
-		Commands.vsTeleport(ship, server, targetX, targetY + height, targetZ);
-		if (((ServerShip) ship).isStatic()) Commands.vsSetStatic(ship, server, false);
+		Commands.vsTeleport(
+				id,
+				server,
+				(long) targetX,
+				(long) (targetY + massCenter.y() - Objects.requireNonNull(ship.getShipAABB()).minY()),
+				(long) targetZ
+		);
+		if (((ServerShip) ship).isStatic()) Commands.vsSetStatic(id, server, false);
 		SHIPS.remove(id);
-		return success(new ItemStack(BottleShip.BOTTLE_WITHOUT_SHIP.get()));
+		return success(newStack);
 	}
 }

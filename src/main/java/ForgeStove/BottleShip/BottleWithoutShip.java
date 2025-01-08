@@ -1,6 +1,7 @@
 package ForgeStove.BottleShip;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -10,46 +11,46 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.joml.primitives.AABBdc;
 import org.valkyrienskies.core.api.ships.*;
+import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import java.util.Objects;
 
 import static ForgeStove.BottleShip.BottleShip.SHIPS;
-import static org.valkyrienskies.mod.common.VSGameUtilsKt.getShipManagingPos;
+import static net.minecraft.world.InteractionResult.*;
 public class BottleWithoutShip extends Item {
 	public BottleWithoutShip(Properties properties) {
 		super(properties);
 	}
-	@Override public @NotNull InteractionResult useOn(UseOnContext context) {
+	@Override public @NotNull InteractionResult useOn(@NotNull UseOnContext context) {
 		Level level = context.getLevel();
-		if (level.isClientSide()) return InteractionResult.CONSUME;
+		if (level.isClientSide()) return PASS;
 		BlockPos blockPos = context.getClickedPos();
-		Ship ship = getShipManagingPos(level, blockPos);
+		Ship ship = VSGameUtilsKt.getShipManagingPos(level, blockPos);
 		Player player = context.getPlayer();
-		if (ship == null || player == null) return InteractionResult.FAIL;
+		if (ship == null || player == null) return FAIL;
 		SHIPS.put(ship.getId(), new ShipData(ship, level));
-		AABBdc shipAABB = ship.getWorldAABB();
-		MinecraftServer server = level.getServer();
-		if (!((ServerShip) ship).isStatic()) Commands.vsSetStatic(ship, server, true);
+		AABBdc worldAABB = ship.getWorldAABB();
+		MinecraftServer server = player.getServer();
 		Commands.vsTeleport(
-				ship,
-				server,
-				blockPos.getX(), blockPos.getY() + (shipAABB.maxY() - shipAABB.minY()) * 2,
+				ship.getId(),
+				server, blockPos.getX(), -blockPos.getY(),
 				blockPos.getZ()
 		);
-		ItemStack newItemStack = new ItemStack(BottleShip.BOTTLE_WITH_SHIP.get());
-		CompoundTag nbt = newItemStack.getOrCreateTag();
+		player.sendSystemMessage(Component.literal(blockPos.toShortString()));
+		if (!((ServerShip) ship).isStatic()) Commands.vsSetStatic(ship.getId(), server, true);
+		ItemStack newStack = new ItemStack(BottleShip.BOTTLE_WITH_SHIP.get());
+		CompoundTag nbt = new CompoundTag();
 		nbt.putString("ID", String.valueOf(ship.getId()));
 		nbt.putString("Name", Objects.requireNonNull(ship.getSlug()));
 		nbt.putString(
 				"Size", "( x: %d y: %d z: %d )".formatted(
-						(int) (shipAABB.maxX() - shipAABB.minX()),
-						(int) (shipAABB.maxY() - shipAABB.minY()),
-						(int) (shipAABB.maxZ() - shipAABB.minZ())
+						(int) (worldAABB.maxX() - worldAABB.minX()),
+						(int) (worldAABB.maxY() - worldAABB.minY()),
+						(int) (worldAABB.maxZ() - worldAABB.minZ())
 				)
 		);
-		newItemStack.setTag(nbt);
-		player.getInventory().removeItem(context.getItemInHand());
-		player.addItem(newItemStack);
-		return InteractionResult.CONSUME;
+		newStack.setTag(nbt);
+		player.setItemInHand(context.getHand(), newStack);
+		return SUCCESS;
 	}
 }
