@@ -13,6 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 plugins {
+    id 'eclipse'
+    id 'idea'
     id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
 }
 group = mod_group_id
