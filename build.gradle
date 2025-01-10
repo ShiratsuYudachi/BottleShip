@@ -13,8 +13,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 plugins {
-    id 'eclipse'
-    id 'idea'
     id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
 }
 group = mod_group_id
@@ -63,7 +61,7 @@ repositories {
 dependencies {
     minecraft ("net.minecraftforge:forge:$minecraft_version-$forge_version")
     implementation("org.valkyrienskies:valkyrienskies-1201-forge:$vs2_version")
-    compileOnly ("org.valkyrienskies.core:api:$vs_core_version")
+    implementation("org.valkyrienskies.core:api:$vs_core_version")
 }
 tasks.named('processResources', ProcessResources).configure {
     var replaceProperties = [minecraft_version   : minecraft_version, minecraft_version_range: minecraft_version_range,

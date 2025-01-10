@@ -78,4 +78,9 @@ public class BottleWithShip extends Item {
 		SHIPS.remove(id);
 		return success(newStack);
 	}
+	//	@Override public @NotNull InteractionResult useOn(@NotNull UseOnContext context) {
+	//		if (context.getLevel().isClientSide()) return InteractionResult.PASS;
+	//		StructurePlacer.placeStructure((ServerLevelAccessor) context.getLevel(), context.getClickedPos(), "ship");
+	//		return InteractionResult.SUCCESS;
+	//	}
 }
