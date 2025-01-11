@@ -43,44 +43,37 @@ public class BottleWithShip extends Item {
 			@NotNull InteractionHand hand
 	) {
 		ItemStack currentStack = player.getItemInHand(hand);
-		if (level.isClientSide()) return pass(currentStack);
+		if (level.isClientSide()) return fail(currentStack);
 		ItemStack newStack = new ItemStack(BOTTLE_WITHOUT_SHIP.get());
-		if (currentStack.getTag() == null) return fail(newStack);
-		long id = Long.parseLong(currentStack.getTag().getString("ID"));
+		long id;
+		try {
+			id = Long.parseLong(Objects.requireNonNull(currentStack.getTag()).getString("ID"));
+		} catch (Exception error) {
+			return fail(currentStack);
+		}
 		if (!SHIPS.containsKey(id)) return fail(newStack);
+		if (SHIPS.get(id).level() != level) return fail(currentStack);
 		Vec3 playerPosition = player.position();
 		Ship ship = SHIPS.get(id).ship();
 		AABBdc worldAABB = ship.getWorldAABB();
-		double height = worldAABB.maxY() - worldAABB.minY();
 		double depth = worldAABB.maxZ() - worldAABB.minZ();
 		double yawRadians = toRadians(player.getYRot());
 		double pitchRadians = toRadians(player.getXRot());
 		double dx = -sin(yawRadians) * cos(pitchRadians);
 		double dy = -sin(pitchRadians);
 		double dz = cos(yawRadians) * cos(pitchRadians);
-		double targetX = playerPosition.x + dx * 3;
-		double targetY = playerPosition.y + dy * 3;
-		double targetZ = playerPosition.z + dz * 3;
-		targetX += (dx * (depth / 2));
-		targetY += (dy * (height / 2));
-		targetZ += (dz * (depth / 2));
-		if (SHIPS.get(id).level() != level) return fail(currentStack);
+		double targetX = playerPosition.x + dx * 5;
+		double targetY = playerPosition.y + dy * 5;
+		double targetZ = playerPosition.z + dz * 5;
 		Vector3dc massCenter = ((ServerShip) ship).getInertiaData().getCenterOfMassInShip();
+		double massHeight = massCenter.y() - Objects.requireNonNull(ship.getShipAABB()).minY();
+		targetX += (dx * (depth / 2));
+		targetY += (dy * massHeight);
+		targetZ += (dz * (depth / 2));
 		MinecraftServer server = level.getServer();
-		Commands.vsTeleport(
-				id,
-				server,
-				(long) targetX,
-				(long) (targetY + massCenter.y() - Objects.requireNonNull(ship.getShipAABB()).minY()),
-				(long) targetZ
-		);
+		Commands.vmodTeleport(id, server, (int) targetX, (int) (targetY + massHeight), (int) targetZ);
 		if (((ServerShip) ship).isStatic()) Commands.vsSetStatic(id, server, false);
 		SHIPS.remove(id);
 		return success(newStack);
 	}
-	//	@Override public @NotNull InteractionResult useOn(@NotNull UseOnContext context) {
-	//		if (context.getLevel().isClientSide()) return InteractionResult.PASS;
-	//		StructurePlacer.placeStructure((ServerLevelAccessor) context.getLevel(), context.getClickedPos(), "ship");
-	//		return InteractionResult.SUCCESS;
-	//	}
 }

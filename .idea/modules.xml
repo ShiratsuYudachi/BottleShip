@@ -3,9 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/BottleShip.iml" filepath="$PROJECT_DIR$/.idea/modules/BottleShip.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BottleShip.main.iml" filepath="$PROJECT_DIR$/.idea/modules/BottleShip.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BottleShip.test.iml" filepath="$PROJECT_DIR$/.idea/modules/BottleShip.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ForgeStove.BottleShip.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ForgeStove.BottleShip.main.iml" />
     </modules>
   </component>
 </project>

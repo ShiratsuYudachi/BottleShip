@@ -22,25 +22,27 @@ public class BottleWithoutShip extends Item {
 	}
 	@Override public @NotNull InteractionResult useOn(@NotNull UseOnContext context) {
 		Level level = context.getLevel();
-		if (level.isClientSide()) return PASS;
+		if (level.isClientSide()) return FAIL;
+		Player player = context.getPlayer();
+		if (player == null || player.getVehicle() != null) return FAIL;
 		BlockPos blockPos = context.getClickedPos();
 		Ship ship = VSGameUtilsKt.getShipManagingPos(level, blockPos);
-		Player player = context.getPlayer();
-		if (ship == null || player == null) return FAIL;
-		SHIPS.put(ship.getId(), new ShipData(ship, level));
+		if (ship == null) return FAIL;
+		long id = ship.getId();
+		SHIPS.put(id, new ShipData(ship, level));
 		AABBic shipAABB = ship.getShipAABB();
 		MinecraftServer server = level.getServer();
-		Commands.vsTeleport(ship.getId(), server, blockPos.getX(), -blockPos.getY(), blockPos.getZ());
-		if (!((ServerShip) ship).isStatic()) Commands.vsSetStatic(ship.getId(), server, true);
+		if (!((ServerShip) ship).isStatic()) Commands.vsSetStatic(id, server, true);
+		Commands.vmodTeleport(id, server, -blockPos.getX(), blockPos.getY(), -blockPos.getZ());
 		ItemStack newStack = new ItemStack(BottleShip.BOTTLE_WITH_SHIP.get());
 		CompoundTag nbt = new CompoundTag();
-		nbt.putString("ID", String.valueOf(ship.getId()));
+		nbt.putString("ID", String.valueOf(id));
 		nbt.putString("Name", Objects.requireNonNull(ship.getSlug()));
 		if (shipAABB != null) nbt.putString(
 				"Size", "( x: %d y: %d z: %d )".formatted(
-						(shipAABB.maxX() - shipAABB.minX()),
-						(shipAABB.maxY() - shipAABB.minY()),
-						(shipAABB.maxZ() - shipAABB.minZ())
+						shipAABB.maxX() - shipAABB.minX(),
+						shipAABB.maxY() - shipAABB.minY(),
+						shipAABB.maxZ() - shipAABB.minZ()
 				)
 		);
 		newStack.setTag(nbt);
