@@ -45,12 +45,8 @@ public class BottleWithShip extends Item {
 		ItemStack currentStack = player.getItemInHand(hand);
 		if (level.isClientSide()) return fail(currentStack);
 		ItemStack newStack = new ItemStack(BOTTLE_WITHOUT_SHIP.get());
-		long id;
-		try {
-			id = Long.parseLong(Objects.requireNonNull(currentStack.getTag()).getString("ID"));
-		} catch (Exception error) {
-			return fail(currentStack);
-		}
+		if (currentStack.getTag() == null) return fail(newStack);
+		long id = Long.parseLong(currentStack.getTag().getString("ID"));
 		if (!SHIPS.containsKey(id)) return fail(newStack);
 		if (SHIPS.get(id).level() != level) return fail(currentStack);
 		Vec3 playerPosition = player.position();

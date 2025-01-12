@@ -30,7 +30,6 @@ public class BottleWithoutShip extends Item {
 		if (ship == null) return FAIL;
 		long id = ship.getId();
 		SHIPS.put(id, new ShipData(ship, level));
-		AABBic shipAABB = ship.getShipAABB();
 		MinecraftServer server = level.getServer();
 		if (!((ServerShip) ship).isStatic()) Commands.vsSetStatic(id, server, true);
 		Commands.vmodTeleport(id, server, -blockPos.getX(), blockPos.getY(), -blockPos.getZ());
@@ -38,6 +37,7 @@ public class BottleWithoutShip extends Item {
 		CompoundTag nbt = new CompoundTag();
 		nbt.putString("ID", String.valueOf(id));
 		nbt.putString("Name", Objects.requireNonNull(ship.getSlug()));
+		AABBic shipAABB = ship.getShipAABB();
 		if (shipAABB != null) nbt.putString(
 				"Size", "( x: %d y: %d z: %d )".formatted(
 						shipAABB.maxX() - shipAABB.minX(),
