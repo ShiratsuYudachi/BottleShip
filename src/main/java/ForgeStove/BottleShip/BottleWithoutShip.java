@@ -2,6 +2,7 @@ package ForgeStove.BottleShip;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
@@ -24,7 +25,7 @@ public class BottleWithoutShip extends Item {
 		Level level = context.getLevel();
 		if (level.isClientSide()) return FAIL;
 		Player player = context.getPlayer();
-		if (player == null || player.getVehicle() != null) return FAIL;
+		if (!(player instanceof ServerPlayer) || player.getVehicle() != null) return FAIL;
 		BlockPos blockPos = context.getClickedPos();
 		Ship ship = VSGameUtilsKt.getShipManagingPos(level, blockPos);
 		if (ship == null) return FAIL;
