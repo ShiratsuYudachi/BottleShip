@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3dc;
 import org.joml.primitives.AABBdc;
 import org.valkyrienskies.core.api.ships.*;
+import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import java.util.*;
 
@@ -46,11 +47,10 @@ public class BottleWithShip extends Item {
 		if (level.isClientSide()) return fail(currentStack);
 		ItemStack newStack = new ItemStack(BOTTLE_WITHOUT_SHIP.get());
 		if (currentStack.getTag() == null) return fail(newStack);
-		long id = Long.parseLong(currentStack.getTag().getString("ID"));
-		if (!SHIPS.containsKey(id)) return fail(newStack);
-		if (SHIPS.get(id).level() != level) return fail(currentStack);
+		long shipID = Long.parseLong(currentStack.getTag().getString("ID"));
 		Vec3 playerPosition = player.position();
-		Ship ship = SHIPS.get(id).ship();
+		Ship ship = VSGameUtilsKt.getAllShips(level).getById(shipID);
+		if (ship == null) return fail(newStack);
 		AABBdc worldAABB = ship.getWorldAABB();
 		double depth = worldAABB.maxZ() - worldAABB.minZ();
 		double yawRadians = toRadians(player.getYRot());
@@ -67,9 +67,15 @@ public class BottleWithShip extends Item {
 		targetY += (dy * massHeight);
 		targetZ += (dz * (depth / 2));
 		MinecraftServer server = level.getServer();
-		Commands.vmodTeleport(id, server, (int) targetX, (int) (targetY + massHeight), (int) targetZ);
-		if (((ServerShip) ship).isStatic()) Commands.vsSetStatic(id, server, false);
-		SHIPS.remove(id);
+		Commands.vmodTeleport(
+				player.getName().toString(),
+				shipID,
+				server,
+				(int) (targetX - player.getX()),
+				(int) (targetY + massHeight - player.getY()),
+				(int) (targetZ - player.getZ())
+		);
+		if (((ServerShip) ship).isStatic()) Commands.vsSetStatic(shipID, server, false);
 		return success(newStack);
 	}
 }

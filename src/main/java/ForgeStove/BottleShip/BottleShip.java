@@ -7,10 +7,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.*;
 
-import java.util.*;
 @Mod(BottleShip.MODID) public class BottleShip {
 	public static final String MODID = "bottle_ship";
-	public static final Map<Long, ShipData> SHIPS = new HashMap<>();
 	public static final DeferredRegister<CreativeModeTab> TABS;
 	public static final RegistryObject<Item> BOTTLE_WITHOUT_SHIP;
 	public static final RegistryObject<Item> BOTTLE_WITH_SHIP;
