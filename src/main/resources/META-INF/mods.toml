@@ -30,3 +30,10 @@ mandatory = true
 versionRange = "${vs2_version_range}"
 ordering = "AFTER"
 side = "BOTH"
+
+[[dependencies.${ mod_id }]]
+modId = "valkyrien_mod"
+mandatory = true
+versionRange = "${vm_version_range}"
+ordering = "NONE"
+side = "BOTH"
