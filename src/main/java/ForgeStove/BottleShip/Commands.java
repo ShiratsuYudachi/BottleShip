@@ -17,16 +17,24 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 public class Commands {
-	public static void vmodTeleport(String playerName, long shipID, MinecraftServer server, int x, int y, int z) {
-		String formatted = String.format(
-				"execute at %s run vmod teleport @v[id=%s] ~%s ~%s ~%s (0 0 0)",
-				playerName.substring(8, playerName.length() - 1),
-				shipID,
-				x,
-				y,
-				z
+	public static void vmodTeleport(
+			@NotNull String playerName,
+			long shipID,
+			MinecraftServer server,
+			int x,
+			int y,
+			int z
+	) {
+		executeCommand(
+				String.format(
+						"execute at %s run vmod teleport @v[id=%s] ~%s ~%s ~%s (0 0 0)",
+						playerName.substring(8, playerName.length() - 1),
+						shipID,
+						x,
+						y,
+						z
+				), server
 		);
-		executeCommand(formatted, server);
 	}
 	private static void executeCommand(String command, @NotNull MinecraftServer server) {
 		try {
