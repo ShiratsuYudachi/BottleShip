@@ -1,9 +1,6 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
-    <inspection_tool class="AutoCloseableResource" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="METHOD_MATCHER_CONFIG" value="java.util.Formatter,format,java.io.Writer,append,com.google.common.base.Preconditions,checkNotNull,org.hibernate.Session,close,java.io.PrintWriter,printf,java.io.PrintStream,printf,java.lang.foreign.Arena,ofAuto,java.lang.foreign.Arena,global,ForgeStove.BottleShip.ShipData,level" />
-    </inspection_tool>
     <inspection_tool class="ExtractMethodRecommender" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="minLength" value="981" />
     </inspection_tool>
@@ -35,24 +32,6 @@
           <option value="http://www.thymeleaf.org" />
           <option value="http://www.w3.org/" />
           <option value="http://xmlns.jcp.org/" />
-        </list>
-      </option>
-    </inspection_tool>
-    <inspection_tool class="VulnerableLibrariesLocal" enabled="false" level="WARNING" enabled_by_default="false">
-      <option name="isIgnoringEnabled" value="true" />
-      <option name="ignoredModules">
-        <list>
-          <option value="BottleShip" />
-        </list>
-      </option>
-      <option name="ignoredPackages">
-        <list>
-          <option value="com.google.guava:guava:31.1-jre" />
-        </list>
-      </option>
-      <option name="ignoredReasons">
-        <list>
-          <option value="不可利用" />
         </list>
       </option>
     </inspection_tool>

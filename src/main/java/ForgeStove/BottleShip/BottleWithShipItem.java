@@ -16,7 +16,9 @@ package ForgeStove.BottleShip;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.*;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
@@ -34,8 +36,9 @@ import static java.lang.Math.*;
 import static net.minecraft.ChatFormatting.AQUA;
 import static net.minecraft.network.chat.Component.*;
 import static net.minecraft.world.InteractionResultHolder.*;
-public class BottleWithShip extends Item {
-	public BottleWithShip(Properties properties) {
+public class BottleWithShipItem extends Item {
+	private long time;
+	public BottleWithShipItem(Properties properties) {
 		super(properties);
 	}
 	@Override
@@ -59,12 +62,28 @@ public class BottleWithShip extends Item {
 	) {
 		ItemStack currentStack = player.getItemInHand(hand);
 		if (level.isClientSide()) return fail(currentStack);
+		player.startUsingItem(hand);
+		time = System.currentTimeMillis();
+		return consume(currentStack);
+	}
+	@Override
+	public void releaseUsing(
+			@NotNull ItemStack itemStack,
+			@NotNull Level level,
+			@NotNull LivingEntity livingEntity,
+			int i
+	) {
+		long strength = min(
+				(System.currentTimeMillis() - time) / 1000 * Config.bottleWithShipChargeStrength.get(),
+				Config.bottleWithShipChargeTime.get()
+		);
+		Player player = (Player) livingEntity;
 		ItemStack newStack = new ItemStack(BOTTLE_WITHOUT_SHIP.get());
-		if (currentStack.getTag() == null) return fail(newStack);
-		long shipID = Long.parseLong(currentStack.getTag().getString("ID"));
+		if (itemStack.getTag() == null) return;
+		long shipID = Long.parseLong(itemStack.getTag().getString("ID"));
 		Vec3 playerPosition = player.position();
 		Ship ship = VSGameUtilsKt.getAllShips(level).getById(shipID);
-		if (ship == null) return fail(newStack);
+		if (ship == null) return;
 		AABBdc worldAABB = ship.getWorldAABB();
 		double depth = worldAABB.maxZ() - worldAABB.minZ();
 		double yawRadians = toRadians(player.getYRot());
@@ -72,9 +91,9 @@ public class BottleWithShip extends Item {
 		double dx = -sin(yawRadians) * cos(pitchRadians);
 		double dy = -sin(pitchRadians);
 		double dz = cos(yawRadians) * cos(pitchRadians);
-		double targetX = playerPosition.x + dx * 5;
-		double targetY = playerPosition.y + dy * 5;
-		double targetZ = playerPosition.z + dz * 5;
+		double targetX = playerPosition.x + dx * strength;
+		double targetY = playerPosition.y + dy * strength;
+		double targetZ = playerPosition.z + dz * strength;
 		Vector3dc massCenter = ((ServerShip) ship).getInertiaData().getCenterOfMassInShip();
 		double massHeight = massCenter.y() - Objects.requireNonNull(ship.getShipAABB()).minY();
 		targetX += (dx * (depth / 2));
@@ -90,6 +109,23 @@ public class BottleWithShip extends Item {
 				(int) (targetZ - player.getZ())
 		);
 		if (((ServerShip) ship).isStatic()) Commands.vsSetStatic(shipID, server, false);
-		return success(newStack);
+		player.setItemInHand(player.getUsedItemHand(), newStack);
+		player.getCooldowns().addCooldown(newStack.getItem(), Config.bottleWithShipCooldown.get());
+		level.playSound(
+				null,
+				player.getX(),
+				player.getY(),
+				player.getZ(),
+				SoundEvents.BOTTLE_EMPTY,
+				player.getSoundSource(),
+				1.0F,
+				1.0F
+		);
+	}
+	@Override public int getUseDuration(@NotNull ItemStack p_40680_) {
+		return 72000;
+	}
+	@Override public @NotNull UseAnim getUseAnimation(@NotNull ItemStack p_40678_) {
+		return UseAnim.BOW;
 	}
 }
