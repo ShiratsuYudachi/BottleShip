@@ -66,8 +66,7 @@ public class BottleWithoutShipItem extends Item {
 		Commands.vmodTeleport(
 				player.getName().toString(),
 				id,
-				server,
-				(int) (-blockPos.getX() - player.getX()), (int) (blockPos.getY() - player.getY()),
+				server, (int) (-blockPos.getX() - player.getX()), (int) (blockPos.getY() - player.getY()),
 				(int) (-blockPos.getZ() - player.getZ())
 		);
 		ItemStack newStack = new ItemStack(BottleShip.BOTTLE_WITH_SHIP.get());
@@ -97,7 +96,7 @@ public class BottleWithoutShipItem extends Item {
 		);
 	}
 	@Override public int getUseDuration(@NotNull ItemStack itemStack) {
-		return 72000;
+		return Integer.MAX_VALUE;
 	}
 	@Override public @NotNull UseAnim getUseAnimation(@NotNull ItemStack itemStack) {
 		return UseAnim.BOW;

@@ -20,9 +20,9 @@ import org.jetbrains.annotations.NotNull;
 public class Config {
 	public static final ForgeConfigSpec CONFIG_SPEC;
 	public static final Config CONFIG;
-	public static ConfigValue<Long> bottleWithoutShipChargeTime;
+	public static ConfigValue<Integer> bottleWithoutShipChargeTime;
 	public static ConfigValue<Integer> bottleWithoutShipCooldown;
-	public static ConfigValue<Long> bottleWithShipChargeTime;
+	public static ConfigValue<Integer> bottleWithShipChargeTime;
 	public static ConfigValue<Integer> bottleWithShipCooldown;
 	public static ConfigValue<Integer> bottleWithShipChargeStrength;
 	static {
@@ -31,9 +31,14 @@ public class Config {
 		CONFIG_SPEC = specPair.getValue();
 	}
 	public Config(ForgeConfigSpec.@NotNull Builder builder) {
-		bottleWithoutShipChargeTime = builder.defineInRange("bottleWithoutShipChargeTime/ms", 1000, 0, Long.MAX_VALUE);
+		bottleWithoutShipChargeTime = builder.defineInRange(
+				"bottleWithoutShipChargeTime/ms",
+				1000,
+				0,
+				Integer.MAX_VALUE
+		);
 		bottleWithoutShipCooldown = builder.defineInRange("bottleWithoutShipCooldown/tick", 100, 0, Integer.MAX_VALUE);
-		bottleWithShipChargeTime = builder.defineInRange("bottleWithShipChargeTime/ms", 1000, 0, Long.MAX_VALUE);
+		bottleWithShipChargeTime = builder.defineInRange("bottleWithShipChargeTime/ms", 1000, 0, Integer.MAX_VALUE);
 		bottleWithShipCooldown = builder.defineInRange("bottleWithShipCooldown/tick", 100, 0, Integer.MAX_VALUE);
 		bottleWithShipChargeStrength = builder.defineInRange("bottleWithShipChargeStrength", 5, 0, Integer.MAX_VALUE);
 	}

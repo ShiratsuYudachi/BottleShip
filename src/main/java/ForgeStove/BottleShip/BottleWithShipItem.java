@@ -122,10 +122,10 @@ public class BottleWithShipItem extends Item {
 				1.0F
 		);
 	}
-	@Override public int getUseDuration(@NotNull ItemStack p_40680_) {
-		return 72000;
+	@Override public int getUseDuration(@NotNull ItemStack itemStack) {
+		return Integer.MAX_VALUE;
 	}
-	@Override public @NotNull UseAnim getUseAnimation(@NotNull ItemStack p_40678_) {
+	@Override public @NotNull UseAnim getUseAnimation(@NotNull ItemStack itemStack) {
 		return UseAnim.BOW;
 	}
 }
