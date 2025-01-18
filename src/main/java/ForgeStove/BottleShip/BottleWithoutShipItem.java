@@ -97,7 +97,7 @@ public class BottleWithoutShipItem extends Item {
 		);
 	}
 	@Override public int getUseDuration(@NotNull ItemStack itemStack) {
-		return Config.bottleWithoutShipCooldown.get();
+		return 72000;
 	}
 	@Override public @NotNull UseAnim getUseAnimation(@NotNull ItemStack itemStack) {
 		return UseAnim.BOW;
