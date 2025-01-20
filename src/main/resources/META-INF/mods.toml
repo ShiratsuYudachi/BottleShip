@@ -7,7 +7,7 @@ modId = "${mod_id}"
 version = "${mod_version}"
 displayName = "${mod_name}"
 displayURL = "https://modrinth.com/mod/bottle_ship"
-logoFile = "../resources/assets/bottle_ship/icon.png"
+logoFile = "icon.png"
 authors = "${mod_authors}"
 description = '''${mod_description}'''
 
@@ -34,7 +34,7 @@ side = "BOTH"
 
 [[dependencies.${ mod_id }]]
 modId = "valkyrien_mod"
-mandatory = true
+mandatory = false
 versionRange = "${vm_version_range}"
 ordering = "NONE"
 side = "BOTH"

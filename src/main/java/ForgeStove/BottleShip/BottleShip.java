@@ -28,7 +28,7 @@ import net.minecraftforge.registries.*;
 	public static final RegistryObject<Item> BOTTLE_WITHOUT_SHIP;
 	public static final RegistryObject<Item> BOTTLE_WITH_SHIP;
 	public static final RegistryObject<CreativeModeTab> ITEM_TAB;
-	private static final DeferredRegister<Item> ITEMS;
+	public static final DeferredRegister<Item> ITEMS;
 	static {
 		TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 		ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
@@ -37,7 +37,7 @@ import net.minecraftforge.registries.*;
 		);
 		BOTTLE_WITH_SHIP = ITEMS.register(
 				"bottle_with_ship",
-				() -> new BottleWithShipItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE).fireResistant())
+				() -> new BottleWithShipItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant())
 		);
 		ITEM_TAB = TABS.register(
 				"tab." + MODID,

@@ -70,8 +70,7 @@ public class BottleWithShipItem extends Item {
 	public void releaseUsing(
 			@NotNull ItemStack itemStack,
 			@NotNull Level level,
-			@NotNull LivingEntity livingEntity,
-			int i
+			@NotNull LivingEntity livingEntity, int timeLeft
 	) {
 		long strength = min(
 				(System.currentTimeMillis() - time) / 1000 * Config.bottleWithShipChargeStrength.get(),
@@ -123,7 +122,7 @@ public class BottleWithShipItem extends Item {
 		);
 	}
 	@Override public int getUseDuration(@NotNull ItemStack itemStack) {
-		return Integer.MAX_VALUE;
+		return 100000;
 	}
 	@Override public @NotNull UseAnim getUseAnimation(@NotNull ItemStack itemStack) {
 		return UseAnim.BOW;

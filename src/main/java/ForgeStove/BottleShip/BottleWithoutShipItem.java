@@ -51,16 +51,15 @@ public class BottleWithoutShipItem extends Item {
 	public void releaseUsing(
 			@NotNull ItemStack itemStack,
 			@NotNull Level level,
-			@NotNull LivingEntity livingEntity,
-			int i
+			@NotNull LivingEntity livingEntity, int timeLeft
 	) {
 		if (level.isClientSide()) return;
 		if (System.currentTimeMillis() - time < Config.bottleWithoutShipChargeTime.get()) return;
 		MinecraftServer server = level.getServer();
 		BlockPos blockPos = context.getClickedPos();
 		Ship ship = VSGameUtilsKt.getShipManagingPos(level, blockPos);
-		Player player = context.getPlayer();
-		if (ship == null || player == null) return;
+		Player player = (Player) livingEntity;
+		if (ship == null) return;
 		long id = ship.getId();
 		if (!((ServerShip) ship).isStatic()) Commands.vsSetStatic(id, server, true);
 		Commands.vmodTeleport(
@@ -96,7 +95,7 @@ public class BottleWithoutShipItem extends Item {
 		);
 	}
 	@Override public int getUseDuration(@NotNull ItemStack itemStack) {
-		return Integer.MAX_VALUE;
+		return 100000;
 	}
 	@Override public @NotNull UseAnim getUseAnimation(@NotNull ItemStack itemStack) {
 		return UseAnim.BOW;
