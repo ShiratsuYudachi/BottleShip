@@ -69,8 +69,7 @@ public class BottleWithShipItem extends Item {
 	@Override
 	public void releaseUsing(
 			@NotNull ItemStack itemStack,
-			@NotNull Level level,
-			@NotNull LivingEntity livingEntity, int timeLeft
+			@NotNull Level level, @NotNull LivingEntity livingEntity, int timeLeft
 	) {
 		long strength = min(
 				(System.currentTimeMillis() - time) / 1000 * Config.bottleWithShipChargeStrength.get(),

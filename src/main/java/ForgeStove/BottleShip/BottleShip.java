@@ -33,7 +33,8 @@ import net.minecraftforge.registries.*;
 		TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 		ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 		BOTTLE_WITHOUT_SHIP = ITEMS.register(
-				"bottle_without_ship", () -> new BottleWithoutShipItem(new Item.Properties().stacksTo(1))
+				"bottle_without_ship",
+				() -> new BottleWithoutShipItem(new Item.Properties().stacksTo(1))
 		);
 		BOTTLE_WITH_SHIP = ITEMS.register(
 				"bottle_with_ship",
