@@ -83,7 +83,7 @@ public class BottleWithShipItem extends Item {
 		Ship ship = VSGameUtilsKt.getAllShips(level).getById(shipID);
 		if (ship == null) return;
 		AABBdc worldAABB = ship.getWorldAABB();
-		double depth = worldAABB.maxZ() - worldAABB.minZ();
+		double depth = worldAABB.maxY() - worldAABB.minY();
 		double yawRadians = toRadians(player.getYRot());
 		double pitchRadians = toRadians(player.getXRot());
 		double dx = -sin(yawRadians) * cos(pitchRadians);
