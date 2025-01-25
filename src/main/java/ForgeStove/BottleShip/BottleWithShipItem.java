@@ -85,7 +85,7 @@ public class BottleWithShipItem extends Item {
 		targetZ += (dz * (depth / 2));
 		MinecraftServer server = level.getServer();
 		Commands.vmodTeleport(
-				player.getName().toString(),
+				player.getName().getString(),
 				shipID,
 				server,
 				(int) (targetX - player.getX()),

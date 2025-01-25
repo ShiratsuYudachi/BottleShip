@@ -35,8 +35,7 @@ public class BottleWithoutShipItem extends Item {
 	}
 	@Override
 	public void releaseUsing(
-			@NotNull ItemStack itemStack,
-			@NotNull Level level, @NotNull LivingEntity livingEntity, int timeLeft
+			@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity, int timeLeft
 	) {
 		if (level.isClientSide()) return;
 		if (System.currentTimeMillis() - time < Config.bottleWithoutShipChargeTime.get()) return;
@@ -48,8 +47,11 @@ public class BottleWithoutShipItem extends Item {
 		long id = ship.getId();
 		if (!((ServerShip) ship).isStatic()) Commands.vsSetStatic(id, server, true);
 		Commands.vmodTeleport(
-				player.getName().toString(),
-				id, server, (int) (-blockPos.getX() - player.getX()), (int) (blockPos.getY() - player.getY()),
+				player.getName().getString(),
+				id,
+				server,
+				(int) (-blockPos.getX() - player.getX()),
+				(int) (blockPos.getY() - player.getY()),
 				(int) (-blockPos.getZ() - player.getZ())
 		);
 		ItemStack newStack = new ItemStack(BottleShip.BOTTLE_WITH_SHIP.get());

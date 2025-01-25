@@ -13,8 +13,7 @@ public class Commands {
 	) {
 		executeCommand(
 				String.format(
-						"execute at %s run vmod teleport @v[id=%s] ~%s ~%s ~%s (0 0 0)",
-						playerName.substring(8, playerName.length() - 1),
+						"execute at %s run vmod teleport @v[id=%s] ~%s ~%s ~%s (0 0 0)", playerName,
 						shipID,
 						x,
 						y,
