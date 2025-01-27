@@ -3,7 +3,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -35,9 +34,9 @@ import net.minecraftforge.registries.*;
 						.build()
 		);
 	}
-	public BottleShip() {
-		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.CONFIG_SPEC);
-		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+	public BottleShip(FMLJavaModLoadingContext context) {
+		IEventBus modEventBus = context.getModEventBus();
+		context.registerConfig(ModConfig.Type.COMMON, Config.CONFIG_SPEC);
 		ITEMS.register(modEventBus);
 		TABS.register(modEventBus);
 	}
