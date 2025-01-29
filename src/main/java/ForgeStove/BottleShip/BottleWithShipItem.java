@@ -2,7 +2,6 @@ package ForgeStove.BottleShip;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -15,13 +14,19 @@ import org.joml.primitives.AABBdc;
 import org.valkyrienskies.core.api.ships.*;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
-import java.util.*;
+import java.util.List;
 
 import static ForgeStove.BottleShip.BottleShip.*;
+import static ForgeStove.BottleShip.Commands.*;
+import static ForgeStove.BottleShip.Config.*;
 import static java.lang.Math.*;
+import static java.lang.System.currentTimeMillis;
+import static java.util.Objects.requireNonNull;
 import static net.minecraft.ChatFormatting.AQUA;
 import static net.minecraft.network.chat.Component.*;
+import static net.minecraft.sounds.SoundEvents.BOTTLE_EMPTY;
 import static net.minecraft.world.InteractionResultHolder.*;
+import static net.minecraft.world.item.UseAnim.BOW;
 public class BottleWithShipItem extends Item {
 	private long time;
 	public BottleWithShipItem(Properties properties) {
@@ -49,17 +54,16 @@ public class BottleWithShipItem extends Item {
 		ItemStack currentStack = player.getItemInHand(hand);
 		if (level.isClientSide()) return fail(currentStack);
 		player.startUsingItem(hand);
-		time = System.currentTimeMillis();
+		time = currentTimeMillis();
 		return consume(currentStack);
 	}
 	@Override
 	public void releaseUsing(
-			@NotNull ItemStack itemStack,
-			@NotNull Level level, @NotNull LivingEntity livingEntity, int timeLeft
+			@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity, int timeLeft
 	) {
 		long strength = min(
-				(System.currentTimeMillis() - time) / 1000 * Config.bottleWithShipChargeStrength.get(),
-				Config.bottleWithShipChargeTime.get()
+				(currentTimeMillis() - time) / 1000 * bottleWithShipChargeStrength.get(),
+				bottleWithShipChargeTime.get()
 		);
 		Player player = (Player) livingEntity;
 		ItemStack newStack = new ItemStack(BOTTLE_WITHOUT_SHIP.get());
@@ -79,12 +83,12 @@ public class BottleWithShipItem extends Item {
 		double targetY = playerPosition.y + dy * strength;
 		double targetZ = playerPosition.z + dz * strength;
 		Vector3dc massCenter = ((ServerShip) ship).getInertiaData().getCenterOfMassInShip();
-		double massHeight = massCenter.y() - Objects.requireNonNull(ship.getShipAABB()).minY();
+		double massHeight = massCenter.y() - requireNonNull(ship.getShipAABB()).minY();
 		targetX += (dx * (depth / 2));
 		targetY += (dy * massHeight);
 		targetZ += (dz * (depth / 2));
 		MinecraftServer server = level.getServer();
-		Commands.vmodTeleport(
+		vmodTeleport(
 				player.getName().getString(),
 				shipID,
 				server,
@@ -92,15 +96,14 @@ public class BottleWithShipItem extends Item {
 				(int) (targetY + massHeight - player.getY()),
 				(int) (targetZ - player.getZ())
 		);
-		if (((ServerShip) ship).isStatic()) Commands.vsSetStatic(shipID, server, false);
+		if (((ServerShip) ship).isStatic()) vsSetStatic(shipID, server, false);
 		player.setItemInHand(player.getUsedItemHand(), newStack);
-		player.getCooldowns().addCooldown(newStack.getItem(), Config.bottleWithShipCooldown.get());
+		player.getCooldowns().addCooldown(newStack.getItem(), bottleWithShipCooldown.get());
 		level.playSound(
 				null,
 				player.getX(),
 				player.getY(),
-				player.getZ(),
-				SoundEvents.BOTTLE_EMPTY,
+				player.getZ(), BOTTLE_EMPTY,
 				player.getSoundSource(),
 				1.0F,
 				1.0F
@@ -110,6 +113,6 @@ public class BottleWithShipItem extends Item {
 		return 100000;
 	}
 	@Override public @NotNull UseAnim getUseAnimation(@NotNull ItemStack itemStack) {
-		return UseAnim.BOW;
+		return BOW;
 	}
 }

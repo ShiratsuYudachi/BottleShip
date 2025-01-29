@@ -1,7 +1,6 @@
 package ForgeStove.BottleShip;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionResult;
@@ -14,9 +13,14 @@ import net.minecraftforge.common.util.FakePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.joml.primitives.AABBic;
 import org.valkyrienskies.core.api.ships.*;
-import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
+import static ForgeStove.BottleShip.BottleShip.BOTTLE_WITH_SHIP;
+import static ForgeStove.BottleShip.Commands.*;
+import static ForgeStove.BottleShip.Config.*;
+import static java.lang.System.currentTimeMillis;
+import static net.minecraft.network.chat.Component.nullToEmpty;
 import static net.minecraft.world.InteractionResult.*;
+import static org.valkyrienskies.mod.common.VSGameUtilsKt.getShipManagingPos;
 public class BottleWithoutShipItem extends Item {
 	private UseOnContext context;
 	private long time;
@@ -30,23 +34,26 @@ public class BottleWithoutShipItem extends Item {
 		if (player == null || player instanceof FakePlayer || player.getVehicle() != null) return FAIL;
 		context = useOnContext;
 		player.startUsingItem(useOnContext.getHand());
-		time = System.currentTimeMillis();
+		time = currentTimeMillis();
 		return CONSUME;
 	}
 	@Override
 	public void releaseUsing(
-			@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity, int timeLeft
+			@NotNull ItemStack itemStack,
+			@NotNull Level level,
+			@NotNull LivingEntity livingEntity,
+			int timeLeft
 	) {
 		if (level.isClientSide()) return;
-		if (System.currentTimeMillis() - time < Config.bottleWithoutShipChargeTime.get()) return;
+		if (currentTimeMillis() - time < bottleWithoutShipChargeTime.get()) return;
 		MinecraftServer server = level.getServer();
 		BlockPos blockPos = context.getClickedPos();
-		Ship ship = VSGameUtilsKt.getShipManagingPos(level, blockPos);
+		Ship ship = getShipManagingPos(level, blockPos);
 		Player player = (Player) livingEntity;
 		if (ship == null) return;
 		long id = ship.getId();
-		if (!((ServerShip) ship).isStatic()) Commands.vsSetStatic(id, server, true);
-		Commands.vmodTeleport(
+		if (!((ServerShip) ship).isStatic()) vsSetStatic(id, server, true);
+		vmodTeleport(
 				player.getName().getString(),
 				id,
 				server,
@@ -54,10 +61,10 @@ public class BottleWithoutShipItem extends Item {
 				(int) (blockPos.getY() - player.getY()),
 				(int) (-blockPos.getZ() - player.getZ())
 		);
-		ItemStack newStack = new ItemStack(BottleShip.BOTTLE_WITH_SHIP.get());
+		ItemStack newStack = new ItemStack(BOTTLE_WITH_SHIP.get());
 		CompoundTag nbt = new CompoundTag();
 		nbt.putString("ID", String.valueOf(id));
-		nbt.putString("Name", String.valueOf(Component.nullToEmpty(ship.getSlug())));
+		nbt.putString("Name", String.valueOf(nullToEmpty(ship.getSlug())));
 		AABBic shipAABB = ship.getShipAABB();
 		if (shipAABB != null) nbt.putString(
 				"Size", "( x: %d y: %d z: %d )".formatted(
@@ -68,7 +75,7 @@ public class BottleWithoutShipItem extends Item {
 		);
 		newStack.setTag(nbt);
 		player.setItemInHand(player.getUsedItemHand(), newStack);
-		player.getCooldowns().addCooldown(newStack.getItem(), Config.bottleWithoutShipCooldown.get());
+		player.getCooldowns().addCooldown(newStack.getItem(), bottleWithoutShipCooldown.get());
 		level.playSound(
 				null,
 				player.getX(),

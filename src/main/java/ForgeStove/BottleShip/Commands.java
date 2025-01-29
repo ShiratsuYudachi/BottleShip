@@ -2,6 +2,8 @@ package ForgeStove.BottleShip;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
+
+import static java.lang.System.err;
 public class Commands {
 	public static void vmodTeleport(
 			@NotNull String playerName,
@@ -25,7 +27,7 @@ public class Commands {
 		try {
 			server.getCommands().getDispatcher().execute(command, server.createCommandSourceStack().withPermission(4));
 		} catch (CommandSyntaxException error) {
-			System.err.println("Error executing command: " + error.getMessage());
+			err.println("Error executing command: " + error.getMessage());
 		}
 	}
 	public static void vsSetStatic(long id, MinecraftServer server, boolean isStatic) {
