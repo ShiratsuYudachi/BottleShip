@@ -31,7 +31,8 @@ public class BottleWithoutShipItem extends Item {
 		Level level = useOnContext.getLevel();
 		if (level.isClientSide()) return FAIL;
 		Player player = useOnContext.getPlayer();
-		if (player == null || player instanceof FakePlayer || player.getVehicle() != null) return FAIL;
+		if (player == null || player instanceof FakePlayer) return FAIL;
+		if (player.getVehicle() != null) player.stopRiding();
 		context = useOnContext;
 		player.startUsingItem(useOnContext.getHand());
 		time = currentTimeMillis();
@@ -67,7 +68,8 @@ public class BottleWithoutShipItem extends Item {
 		nbt.putString("Name", String.valueOf(nullToEmpty(ship.getSlug())));
 		AABBic shipAABB = ship.getShipAABB();
 		if (shipAABB != null) nbt.putString(
-				"Size", "( x: %d y: %d z: %d )".formatted(
+				"Size", String.format(
+						"[§bX:§a%d §bY:§a%d §bZ:§a%d§f]",
 						shipAABB.maxX() - shipAABB.minX(),
 						shipAABB.maxY() - shipAABB.minY(),
 						shipAABB.maxZ() - shipAABB.minZ()

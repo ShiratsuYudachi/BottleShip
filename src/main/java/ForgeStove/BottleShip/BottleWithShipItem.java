@@ -20,9 +20,7 @@ import static ForgeStove.BottleShip.BottleShip.*;
 import static ForgeStove.BottleShip.Commands.*;
 import static ForgeStove.BottleShip.Config.*;
 import static java.lang.Math.*;
-import static java.lang.System.currentTimeMillis;
 import static java.util.Objects.requireNonNull;
-import static net.minecraft.ChatFormatting.AQUA;
 import static net.minecraft.network.chat.Component.*;
 import static net.minecraft.sounds.SoundEvents.BOTTLE_EMPTY;
 import static net.minecraft.world.InteractionResultHolder.*;
@@ -39,11 +37,12 @@ public class BottleWithShipItem extends Item {
 			@NotNull List<Component> tooltip,
 			@NotNull TooltipFlag flag
 	) {
+		if (level != null && level.isClientSide()) return;
 		CompoundTag nbt = itemStack.getTag();
 		if (nbt == null) return;
-		tooltip.add(translatable("tooltip." + MODID + ".id", nullToEmpty(nbt.getString("ID"))).withStyle(AQUA));
-		tooltip.add(translatable("tooltip." + MODID + ".name", nullToEmpty(nbt.getString("Name"))).withStyle(AQUA));
-		tooltip.add(translatable("tooltip." + MODID + ".size", nullToEmpty(nbt.getString("Size"))).withStyle(AQUA));
+		tooltip.add(translatable("tooltip." + MODID + ".id", nullToEmpty(nbt.getString("ID"))));
+		tooltip.add(translatable("tooltip." + MODID + ".name", nullToEmpty(nbt.getString("Name"))));
+		tooltip.add(translatable("tooltip." + MODID + ".size", nullToEmpty(nbt.getString("Size"))));
 	}
 	@Override
 	public @NotNull InteractionResultHolder<ItemStack> use(
@@ -54,15 +53,19 @@ public class BottleWithShipItem extends Item {
 		ItemStack currentStack = player.getItemInHand(hand);
 		if (level.isClientSide()) return fail(currentStack);
 		player.startUsingItem(hand);
-		time = currentTimeMillis();
+		time = level.getGameTime();
 		return consume(currentStack);
 	}
 	@Override
 	public void releaseUsing(
-			@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity, int timeLeft
+			@NotNull ItemStack itemStack,
+			@NotNull Level level,
+			@NotNull LivingEntity livingEntity,
+			int timeLeft
 	) {
+		if (level.isClientSide()) return;
 		long strength = min(
-				(currentTimeMillis() - time) / 1000 * bottleWithShipChargeStrength.get(),
+				(level.getGameTime() - time) / 20 * bottleWithShipChargeStrength.get(),
 				bottleWithShipChargeTime.get()
 		);
 		Player player = (Player) livingEntity;
@@ -102,8 +105,7 @@ public class BottleWithShipItem extends Item {
 		level.playSound(
 				null,
 				player.getX(),
-				player.getY(),
-				player.getZ(), BOTTLE_EMPTY,
+				player.getY(), player.getZ(), BOTTLE_EMPTY,
 				player.getSoundSource(),
 				1.0F,
 				1.0F
