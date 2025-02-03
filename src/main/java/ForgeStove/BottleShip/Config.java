@@ -18,9 +18,9 @@ public class Config {
 	}
 	public Config(ForgeConfigSpec.@NotNull Builder builder) {
 		bottleWithoutShipChargeTime = builder.defineInRange("bottleWithoutShipChargeTime/ms", 1000, 0, 100000);
-		bottleWithoutShipCooldown = builder.defineInRange("bottleWithoutShipCooldown/tick", 100, 0, Integer.MAX_VALUE);
+		bottleWithoutShipCooldown = builder.defineInRange("bottleWithoutShipCooldown/tick", 60, 0, Integer.MAX_VALUE);
 		bottleWithShipChargeTime = builder.defineInRange("bottleWithShipChargeTime/ms", 1000, 0, 100000);
-		bottleWithShipCooldown = builder.defineInRange("bottleWithShipCooldown/tick", 100, 0, Integer.MAX_VALUE);
+		bottleWithShipCooldown = builder.defineInRange("bottleWithShipCooldown/tick", 60, 0, Integer.MAX_VALUE);
 		bottleWithShipChargeStrength = builder.defineInRange("bottleWithShipChargeStrength", 5, 0, Integer.MAX_VALUE);
 	}
 }

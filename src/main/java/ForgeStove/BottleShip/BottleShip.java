@@ -1,5 +1,7 @@
 package ForgeStove.BottleShip;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -8,7 +10,8 @@ import net.minecraftforge.registries.*;
 import org.jetbrains.annotations.NotNull;
 
 import static ForgeStove.BottleShip.Config.CONFIG_SPEC;
-import static net.minecraft.network.chat.Component.translatable;
+import static net.minecraft.network.chat.Component.*;
+import static net.minecraft.sounds.SoundEvents.NOTE_BLOCK_BELL;
 import static net.minecraft.world.item.CreativeModeTab.builder;
 import static net.minecraft.world.item.Item.Properties;
 import static net.minecraft.world.item.Rarity.UNCOMMON;
@@ -25,7 +28,8 @@ import static net.minecraftforge.registries.DeferredRegister.create;
 		TABS = create(Registries.CREATIVE_MODE_TAB, MODID);
 		ITEMS = create(ForgeRegistries.ITEMS, MODID);
 		BOTTLE_WITHOUT_SHIP = ITEMS.register(
-				"bottle_without_ship", () -> new BottleWithoutShipItem(new Properties().stacksTo(1))
+				"bottle_without_ship",
+				() -> new BottleWithoutShipItem(new Properties().stacksTo(1))
 		);
 		BOTTLE_WITH_SHIP = ITEMS.register(
 				"bottle_with_ship",
@@ -43,5 +47,17 @@ import static net.minecraftforge.registries.DeferredRegister.create;
 		context.registerConfig(COMMON, CONFIG_SPEC);
 		ITEMS.register(modEventBus);
 		TABS.register(modEventBus);
+	}
+	public static void onUseTickCommon(@NotNull LivingEntity livingEntity, int tickCount, int chargeTime) {
+		if (!(livingEntity instanceof Player player)) return;
+		int progress = tickCount * 1000 / chargeTime;
+		if (progress == 18) player.playSound(NOTE_BLOCK_BELL.value(), 5.0F, 5.0F);
+		StringBuilder progressBar = new StringBuilder("§f[");
+		for (int i = 0; i < 18; i++) {
+			if (i < progress) progressBar.append("§a■");
+			else progressBar.append("§c■");
+		}
+		progressBar.append("§f]");
+		player.displayClientMessage(literal(progressBar.toString()), true);
 	}
 }

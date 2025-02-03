@@ -73,7 +73,7 @@ dependencies {
     implementation fg.deobf("org.valkyrienskies:valkyrienskies-1201-forge:${vs2_version}")
     runtimeOnly fg.deobf("thedarkcolour:kotlinforforge:$kotlinforforge_version")
     runtimeOnly fg.deobf("dev.architectury:architectury-forge:$architectury_version")
-    runtimeOnly fg.deobf("maven.modrinth:vmod:${vmod_version}")
+    //runtimeOnly fg.deobf("maven.modrinth:vmod:${vmod_version}")
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
 }
 tasks.named('processResources', ProcessResources).configure {
