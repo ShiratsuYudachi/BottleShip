@@ -44,7 +44,7 @@ public class BottleWithoutShipItem extends Item {
 			int tickLeft
 	) {
 		if (!level.isClientSide()) return;
-		onUseTickCommon(livingEntity, getUseDuration(itemStack) - tickLeft, bottleWithoutShipChargeTime.get());
+		onUseTickCommon(level, livingEntity, getUseDuration(itemStack) - tickLeft, bottleWithoutShipChargeTime.get());
 	}
 	@Override public int getUseDuration(@NotNull ItemStack itemStack) {
 		return 100000;
@@ -52,8 +52,7 @@ public class BottleWithoutShipItem extends Item {
 	@Override
 	public void releaseUsing(
 			@NotNull ItemStack itemStack,
-			@NotNull Level level,
-			@NotNull LivingEntity livingEntity, int tickLeft
+			@NotNull Level level, @NotNull LivingEntity livingEntity, int tickLeft
 	) {
 		if (level.isClientSide()) return;
 		if ((getUseDuration(itemStack) - tickLeft) * 1000 / 20 < bottleWithoutShipChargeTime.get()) return;

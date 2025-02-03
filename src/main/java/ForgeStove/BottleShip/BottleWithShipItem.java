@@ -38,12 +38,12 @@ public class BottleWithShipItem extends Item {
 		if (level == null) return;
 		CompoundTag nbt = itemStack.getTag();
 		if (nbt == null) return;
-		tooltip.add(translatable("tooltip." + MODID + ".id", literal(String.format("§b%s§f", nbt.getString("ID")))));
+		tooltip.add(translatable("tooltip." + MOD_ID + ".id", literal(String.format("§b%s§f", nbt.getString("ID")))));
 		tooltip.add(translatable(
-				"tooltip." + MODID + ".name",
+				"tooltip." + MOD_ID + ".name",
 				literal(String.format("§b%s§f", nbt.getString("Name")))
 		));
-		tooltip.add(translatable("tooltip." + MODID + ".size", literal(nbt.getString("Size"))));
+		tooltip.add(translatable("tooltip." + MOD_ID + ".size", literal(nbt.getString("Size"))));
 	}
 	@Override
 	public void onUseTick(
@@ -52,8 +52,7 @@ public class BottleWithShipItem extends Item {
 			@NotNull ItemStack itemStack,
 			int tickLeft
 	) {
-		if (!level.isClientSide()) return;
-		onUseTickCommon(livingEntity, getUseDuration(itemStack) - tickLeft, bottleWithShipChargeTime.get());
+		onUseTickCommon(level, livingEntity, getUseDuration(itemStack) - tickLeft, bottleWithShipChargeTime.get());
 	}
 	@Override public int getUseDuration(@NotNull ItemStack itemStack) {
 		return 100000;
@@ -72,8 +71,7 @@ public class BottleWithShipItem extends Item {
 	@Override
 	public void releaseUsing(
 			@NotNull ItemStack itemStack,
-			@NotNull Level level,
-			@NotNull LivingEntity livingEntity, int tickLeft
+			@NotNull Level level, @NotNull LivingEntity livingEntity, int tickLeft
 	) {
 		if (level.isClientSide()) return;
 		int tickCount = getUseDuration(itemStack) - tickLeft;
