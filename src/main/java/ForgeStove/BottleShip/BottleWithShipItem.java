@@ -1,120 +1,172 @@
 package ForgeStove.BottleShip;
+
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.*;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.joml.primitives.AABBdc;
 import org.valkyrienskies.core.api.ships.ServerShip;
+import org.valkyrienskies.mod.common.assembly.ShipAssemblyKt;
+import org.valkyrienskies.core.api.ships.properties.ShipTransform;
+import org.valkyrienskies.core.impl.api.ServerShipUser;
+import org.valkyrienskies.core.impl.api.ShipForcesInducer;
+import org.valkyrienskies.mod.common.VSGameUtilsKt;
+import org.valkyrienskies.core.impl.datastructures.DenseBlockPosSet;
 
 import java.util.List;
 
-import static ForgeStove.BottleShip.BottleShip.*;
-import static ForgeStove.BottleShip.Commands.*;
-import static ForgeStove.BottleShip.Config.*;
-import static java.lang.Math.*;
-import static net.minecraft.network.chat.Component.*;
+import static ForgeStove.BottleShip.BottleShip.BOTTLE_WITHOUT_SHIP;
+import static net.minecraft.network.chat.Component.translatable;
 import static net.minecraft.sounds.SoundEvents.BOTTLE_EMPTY;
 import static net.minecraft.sounds.SoundSource.PLAYERS;
-import static net.minecraft.world.InteractionResultHolder.*;
-import static net.minecraft.world.item.UseAnim.BOW;
-import static org.valkyrienskies.mod.common.VSGameUtilsKt.getVsPipeline;
+
 public class BottleWithShipItem extends Item {
+
 	public BottleWithShipItem(Properties properties) {
 		super(properties);
 	}
+
 	@Override
-	public void appendHoverText(
-			@NotNull ItemStack itemStack,
-			Level level,
-			@NotNull List<Component> tooltip,
-			@NotNull TooltipFlag flag
-	) {
+	public void appendHoverText(@NotNull ItemStack itemStack, Level level, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
 		if (level == null) return;
 		CompoundTag nbt = itemStack.getTag();
 		if (nbt == null) return;
-		tooltip.add(translatable("tooltip." + MOD_ID + ".id", literal(String.format("§b%s§f", nbt.getString("ID")))));
-		tooltip.add(translatable(
-				"tooltip." + MOD_ID + ".name",
-				literal(String.format("§b%s§f", nbt.getString("Name")))
-		));
-		tooltip.add(translatable("tooltip." + MOD_ID + ".size", literal(nbt.getString("Size"))));
+		tooltip.add(translatable("tooltip.bottleship.id", Component.literal(String.format("§b%s§f", nbt.getString("ID")))));
+		tooltip.add(translatable("tooltip.bottleship.name", Component.literal(String.format("§b%s§f", nbt.getString("Name")))));
+		tooltip.add(translatable("tooltip.bottleship.size", Component.literal(nbt.getString("Size"))));
 	}
+
 	@Override
-	public void onUseTick(
-			@NotNull Level level,
-			@NotNull LivingEntity livingEntity,
-			@NotNull ItemStack itemStack,
-			int tickLeft
-	) {
-		onUseTickCommon(level, livingEntity, getUseDuration(itemStack) - tickLeft, bottleWithShipChargeTime.get());
+	public void onUseTick(@NotNull Level level, @NotNull LivingEntity livingEntity, @NotNull ItemStack itemStack, int tickLeft) {
+		if (level.isClientSide()) {
+			if (livingEntity instanceof Player player) {
+				int tickCount = getUseDuration(itemStack) - tickLeft;
+				BottleShip.onUseTickCommon(level, livingEntity, tickCount, 100);
+			}
+		}
 	}
-	@Override public int getUseDuration(@NotNull ItemStack itemStack) {
+
+	@Override
+	public int getUseDuration(@NotNull ItemStack itemStack) {
 		return 100000;
 	}
+
 	@Override
-	public @NotNull InteractionResultHolder<ItemStack> use(
-			@NotNull Level level,
-			@NotNull Player player,
-			@NotNull InteractionHand hand
-	) {
-		ItemStack currentStack = player.getItemInHand(hand);
-		if (level.isClientSide()) return fail(currentStack);
-		player.startUsingItem(hand);
-		return consume(currentStack);
+	public @NotNull UseAnim getUseAnimation(@NotNull ItemStack itemStack) {
+		return UseAnim.BOW;
 	}
+
 	@Override
-	public void releaseUsing(
-			@NotNull ItemStack itemStack,
-			@NotNull Level level, @NotNull LivingEntity livingEntity, int tickLeft
-	) {
+	public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
+		ItemStack currentStack = player.getItemInHand(hand);
+		if (level.isClientSide()) return InteractionResultHolder.pass(currentStack);
+		player.startUsingItem(hand);
+		return InteractionResultHolder.consume(currentStack);
+	}
+
+	@Override
+	public void releaseUsing(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity, int tickLeft) {
 		if (level.isClientSide()) return;
 		int tickCount = getUseDuration(itemStack) - tickLeft;
-		if (tickCount * 1000 / 20 < bottleWithShipChargeTime.get()) return;
-		long strength = min(tickCount / 20 * bottleWithShipChargeStrength.get(), bottleWithShipChargeTime.get());
+		if (tickCount * 1000 / 20 < 100) return;
+
 		if (!(livingEntity instanceof Player player)) return;
-		if (itemStack.getTag() == null) return;
-		long shipID = Long.parseLong(itemStack.getTag().getString("ID"));
-		Vec3 playerPosition = player.position();
+		CompoundTag nbt = itemStack.getTag();
+		if (nbt == null) return;
+
 		MinecraftServer server = level.getServer();
 		if (server == null) return;
-		ServerShip ship = getVsPipeline(server).getShipWorld().getAllShips().getById(shipID);
-		if (ship == null) return;
-		AABBdc worldAABB = ship.getWorldAABB();
-		double depth = worldAABB.maxY() - worldAABB.minY();
-		double yawRadians = toRadians(player.getYRot());
-		double pitchRadians = toRadians(player.getXRot());
-		double dx = -sin(yawRadians) * cos(pitchRadians);
-		double dy = -sin(pitchRadians);
-		double dz = cos(yawRadians) * cos(pitchRadians);
-		double targetX = playerPosition.x + dx * strength;
-		double targetY = playerPosition.y + dy * strength;
-		double targetZ = playerPosition.z + dz * strength;
-		if (ship.getShipAABB() == null) return;
-		double massHeight = ship.getInertiaData().getCenterOfMassInShip().y() - ship.getShipAABB().minY();
-		targetX += (dx * (depth / 2));
-		targetY += (dy * massHeight);
-		targetZ += (dz * (depth / 2));
-		teleport(
-				player.getName().getString(),
-				ship,
-				server,
-				(long) (targetX - player.getX()),
-				(long) (targetY + massHeight - player.getY()),
-				(long) (targetZ - player.getZ())
-		);
-		setStatic(ship, server, false);
-		ItemStack newStack = new ItemStack(BOTTLE_WITHOUT_SHIP.get());
-		player.setItemInHand(player.getUsedItemHand(), newStack);
-		player.getCooldowns().addCooldown(newStack.getItem(), bottleWithShipCooldown.get());
-		level.playSound(null, player.getX(), player.getY(), player.getZ(), BOTTLE_EMPTY, PLAYERS, 1.0F, 1.0F);
-	}
-	@Override public @NotNull UseAnim getUseAnimation(@NotNull ItemStack itemStack) {
-		return BOW;
+
+		// Get the structure name from NBT
+		String shipName = nbt.getString("Name");
+		if (shipName.isEmpty()) return;
+
+		// Calculate placement position based on player's view
+		Vec3 playerPos = player.position();
+		double yawRadians = Math.toRadians(player.getYRot());
+		double pitchRadians = Math.toRadians(player.getXRot());
+		double dx = -Math.sin(yawRadians) * Math.cos(pitchRadians);
+		double dy = -Math.sin(pitchRadians);
+		double dz = Math.cos(yawRadians) * Math.cos(pitchRadians);
+
+		// Calculate target position
+		double strength = Math.min(tickCount / 20.0 * 100, 100);
+		double targetX = playerPos.x + dx * strength;
+		double targetY = playerPos.y + dy * strength;
+		double targetZ = playerPos.z + dz * strength;
+
+		BlockPos targetPos = new BlockPos((int)targetX, (int)targetY, (int)targetZ);
+
+		// Load and place the structure
+		StructureTemplateManager manager = ((ServerLevel) level).getStructureManager();
+		ResourceLocation structureId = new ResourceLocation("bottleship", shipName);
+		StructureTemplate template = manager.getOrCreate(structureId);
+
+		if (template != null) {
+			// Place the structure
+			StructurePlaceSettings settings = new StructurePlaceSettings();
+			boolean success = template.placeInWorld((ServerLevel) level, targetPos, targetPos, settings, level.random, 2);
+
+			if (success) {
+				// Get structure size for ship creation
+				var templateSize = template.getSize();
+				BlockPos size = new BlockPos(templateSize.getX(), templateSize.getY(), templateSize.getZ());
+				
+				// Create DenseBlockPosSet to collect ship blocks
+				DenseBlockPosSet blockSet = new DenseBlockPosSet();
+
+				// Collect all non-air blocks in the structure
+				for (int x = 0; x < size.getX(); x++) {
+					for (int y = 0; y < size.getY(); y++) {
+						for (int z = 0; z < size.getZ(); z++) {
+							BlockPos relativePos = new BlockPos(x, y, z);
+							BlockPos worldPos = targetPos.offset(x, y, z);
+							if (!level.getBlockState(worldPos).isAir()) {
+								blockSet.add(worldPos.getX(), worldPos.getY(), worldPos.getZ());
+							}
+						}
+					}
+				}
+
+				if (!blockSet.isEmpty()) {
+					// Create ship from collected blocks
+					ServerShip ship = ShipAssemblyKt.createNewShipWithBlocks(
+						targetPos.offset(size.getX() / 2, size.getY() / 2, size.getZ() / 2),
+						blockSet,
+						(ServerLevel) level
+					);
+
+					if (ship != null) {
+						ship.setSlug(shipName);
+
+						// Play sound effect
+						level.playSound(null, targetPos, BOTTLE_EMPTY, PLAYERS, 1.0F, 1.0F);
+
+						// Give empty bottle back
+						ItemStack emptyBottle = new ItemStack(BOTTLE_WITHOUT_SHIP.get());
+						player.setItemInHand(player.getUsedItemHand(), emptyBottle);
+						player.getCooldowns().addCooldown(this, 20);
+					}
+				}
+			}
+		}
 	}
 }
