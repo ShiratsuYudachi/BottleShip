@@ -107,28 +107,49 @@ public class BottleWithShipItem extends Item {
 		double dy = -Math.sin(pitchRadians);
 		double dz = Math.cos(yawRadians) * Math.cos(pitchRadians);
 
-		// Calculate target position
 		double targetX = playerPos.x + dx;
 		double targetY = playerPos.y + dy + 1;
 		double targetZ = playerPos.z + dz;
 
 		BlockPos targetPos = new BlockPos((int)targetX, (int)targetY, (int)targetZ);
 
-		// Load and place the structure
+		// Load and check the structure
 		StructureTemplateManager manager = ((ServerLevel) level).getStructureManager();
 		ResourceLocation structureId = new ResourceLocation("bottleship", shipName);
 		StructureTemplate template = manager.getOrCreate(structureId);
 
 		if (template != null) {
+			// Get structure size
+			var templateSize = template.getSize();
+			BlockPos size = new BlockPos(templateSize.getX(), templateSize.getY(), templateSize.getZ());
+			
+			// Check if there's enough space
+			boolean hasSpace = true;
+			for (int x = 0; x < size.getX(); x++) {
+				for (int y = 0; y < size.getY(); y++) {
+					for (int z = 0; z < size.getZ(); z++) {
+						BlockPos checkPos = targetPos.offset(x, y, z);
+						if (!level.getBlockState(checkPos).isAir()) {
+							hasSpace = false;
+							break;
+						}
+					}
+					if (!hasSpace) break;
+				}
+				if (!hasSpace) break;
+			}
+
+			if (!hasSpace) {
+				// Send message to player if there's not enough space
+				player.displayClientMessage(Component.translatable("message.bottle_ship.no_space"), true);
+				return;
+			}
+
 			// Place the structure
 			StructurePlaceSettings settings = new StructurePlaceSettings();
 			boolean success = template.placeInWorld((ServerLevel) level, targetPos, targetPos, settings, level.random, 2);
 
-			if (success) {
-				// Get structure size for ship creation
-				var templateSize = template.getSize();
-				BlockPos size = new BlockPos(templateSize.getX(), templateSize.getY(), templateSize.getZ());
-				
+			if (success) {				
 				// Create DenseBlockPosSet to collect ship blocks
 				DenseBlockPosSet blockSet = new DenseBlockPosSet();
 

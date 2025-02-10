@@ -4,5 +4,6 @@
   "item.bottle_ship.bottle_with_ship": "Bottle with Ship",
   "tooltip.bottle_ship.id": "ID: %s",
   "tooltip.bottle_ship.name": "Name: %s",
-  "tooltip.bottle_ship.size": "Size: %s"
+  "tooltip.bottle_ship.size": "Size: %s",
+  "message.bottle_ship.no_space": "Not enough space to place the ship!"
 }
