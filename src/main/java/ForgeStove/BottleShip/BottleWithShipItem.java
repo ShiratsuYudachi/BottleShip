@@ -49,9 +49,9 @@ public class BottleWithShipItem extends Item {
 		if (level == null) return;
 		CompoundTag nbt = itemStack.getTag();
 		if (nbt == null) return;
-		tooltip.add(translatable("tooltip.bottleship.id", Component.literal(String.format("§b%s§f", nbt.getString("ID")))));
-		tooltip.add(translatable("tooltip.bottleship.name", Component.literal(String.format("§b%s§f", nbt.getString("Name")))));
-		tooltip.add(translatable("tooltip.bottleship.size", Component.literal(nbt.getString("Size"))));
+		tooltip.add(translatable("tooltip.bottle_ship.id", Component.literal(String.format("§b%s§f", nbt.getString("ID")))));
+		tooltip.add(translatable("tooltip.bottle_ship.name", Component.literal(String.format("§b%s§f", nbt.getString("Name")))));
+		tooltip.add(translatable("tooltip.bottle_ship.size", Component.literal(nbt.getString("Size"))));
 	}
 
 	@Override
