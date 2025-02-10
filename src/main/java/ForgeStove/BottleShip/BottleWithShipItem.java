@@ -108,10 +108,9 @@ public class BottleWithShipItem extends Item {
 		double dz = Math.cos(yawRadians) * Math.cos(pitchRadians);
 
 		// Calculate target position
-		double strength = Math.min(tickCount / 20.0 * 100, 100);
-		double targetX = playerPos.x + dx * strength;
-		double targetY = playerPos.y + dy * strength;
-		double targetZ = playerPos.z + dz * strength;
+		double targetX = playerPos.x + dx;
+		double targetY = playerPos.y + dy + 1;
+		double targetZ = playerPos.z + dz;
 
 		BlockPos targetPos = new BlockPos((int)targetX, (int)targetY, (int)targetZ);
 
